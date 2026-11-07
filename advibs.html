@@ -1,0 +1,788 @@
+<title>AdVibs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: brand-blue hero band, then alternating light sections, pill nav that stays on top, deep-blue footer */
+:root{
+  --blue-1:#0573b9; --blue-2:#1b4a91; --blue-3:#12306b; --red:#e8202a; --gold:#f5c542;
+  --bg:#f3f7fc; --surface:#ffffff; --surface-2:#e8f1fb; --ink:#0d2550; --ink-2:#3d5683; --muted:#6c80a3;
+  --line:#d3e1f2; --accent:#0a62ad; --accent-ink:#ffffff; --good:#14915a; --bad:#d93a3a;
+  --f-display:"Poppins",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"DM Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:14px; --shadow:0 10px 30px -18px rgba(13,37,80,.35);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#071328; --surface:#0d1f3e; --surface-2:#112a52; --ink:#e7effc; --ink-2:#b1c4e4; --muted:#7f95bb;
+  --line:#1d3a68; --accent:#5aa9f0; --accent-ink:#06142b; --good:#3ccf8a; --bad:#ff6b6b; --shadow:0 10px 30px -18px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#071328; --surface:#0d1f3e; --surface-2:#112a52; --ink:#e7effc; --ink-2:#b1c4e4; --muted:#7f95bb;
+  --line:#1d3a68; --accent:#5aa9f0; --accent-ink:#06142b; --good:#3ccf8a; --bad:#ff6b6b; --shadow:0 10px 30px -18px rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--blue-3)}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- logo ---------- */
+.logo{text-decoration:none;display:inline-flex;align-items:baseline;font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1;white-space:nowrap}
+.logo svg{height:1.05em;width:.82em;margin:0 -.04em 0 -.02em;overflow:visible}
+.logo .i{position:relative;display:inline-block}
+.logo .i::after{content:"";position:absolute;left:50%;top:-.02em;width:.26em;height:.26em;border-radius:50%;background:var(--red);transform:translateX(-50%)}
+
+/* ---------- nav ---------- */
+header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--blue-3) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.nav .logo{font-size:26px}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px}
+.nav ul a{display:block;padding:8px 14px;border-radius:999px;color:#dbe8fb;text-decoration:none;font-weight:500;font-size:15px}
+.nav ul a:hover,.nav ul a.on{background:rgba(255,255,255,.12);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:600;font-size:15px;padding:11px 20px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 8px 20px -10px rgba(232,32,42,.8)}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn-solid{background:var(--accent);color:var(--accent-ink)}
+.menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:10px;padding:8px 10px;cursor:pointer}
+@media (max-width:900px){
+  .nav ul{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:var(--blue-3);padding:8px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:none}
+  .nav ul.open{display:flex}
+  .menu-btn{display:block}
+  .nav .cta-top{display:none}
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;color:#fff;background:linear-gradient(120deg,var(--blue-1) 0%,var(--blue-2) 70%,var(--blue-3) 100%);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.4'%3E%3Cpath d='M28 4c8 8 8 16 0 24-8-8-8-16 0-24zM28 28c8 8 8 16 0 24-8-8-8-16 0-24zM4 28c8-8 16-8 24 0-8 8-16 8-24 0zM28 28c8-8 16-8 24 0-8 8-16 8-24 0z'/%3E%3Ccircle cx='28' cy='28' r='3'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-block:72px 64px}
+.hero .logo{font-size:clamp(64px,10vw,124px)}
+.motto{display:inline-flex;align-items:center;gap:10px;margin-top:22px;background:#fff;color:#0d2550;font-family:var(--f-display);font-weight:700;font-size:clamp(15px,1.8vw,19px);padding:9px 20px;border-radius:999px;transform:rotate(-2deg);box-shadow:4px 5px 0 #0b1a3a}
+.motto .spark{color:var(--gold)}
+.hero p.lead{margin-top:26px;max-width:56ch;font-size:18px;color:#dbe8fb}
+.hero p.lead b{color:#fff}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.flow{background:rgba(255,255,255,.96);color:#0d2550;border-radius:20px;padding:24px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6)}
+.flow h3{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:#0a62ad;margin-bottom:14px}
+.flow ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.flow li{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;padding:12px;border-radius:12px;background:#eef5fd}
+.flow li .ic{width:44px;height:44px;border-radius:12px;background:#0a62ad;color:#fff;display:grid;place-items:center}
+.flow li b{font-family:var(--f-display);display:block;font-size:15px}
+.flow li span{font-size:14px;color:#3d5683}
+.flow li:last-child{background:#0a62ad;color:#fff}
+.flow li:last-child .ic{background:var(--red)}
+.flow li:last-child span{color:#dbe8fb}
+.stats-band{position:relative;border-top:1px solid rgba(255,255,255,.15)}
+.stats-band .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-block:28px}
+.stat b{display:block;font-family:var(--f-display);font-size:clamp(28px,3.4vw,40px);font-weight:800;line-height:1}
+.stat span{font-size:14px;color:#c9dbf5}
+.stats-band small{grid-column:1/-1;font-size:12px;color:#9fbbe4}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;padding-block:48px}.stats-band .wrap{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- sections ---------- */
+section.block{padding-block:88px}
+.eyebrow{font-family:var(--f-display);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--red)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:40px}
+.head h2{font-size:clamp(30px,4vw,44px);font-weight:800;margin-top:10px;max-width:20ch}
+.head p{max-width:52ch;color:var(--ink-2)}
+.alt{background:var(--surface-2)}
+
+/* services */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.pillar .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:var(--surface-2);color:var(--accent)}
+.pillar h3{font-size:22px;font-weight:800;letter-spacing:.01em}
+.pillar .tag{font-size:13px;color:var(--muted);font-weight:500;margin-top:-8px}
+.pillar ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px;color:var(--ink-2)}
+.pillar li{display:flex;gap:8px}
+.pillar li::before{content:"";flex:none;width:6px;height:6px;margin-top:9px;border-radius:50%;background:var(--accent)}
+.roas{margin-top:20px;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:linear-gradient(110deg,var(--blue-2),var(--blue-3));color:#fff;border-radius:var(--r);padding:26px 28px}
+.roas h3{font-size:22px}
+.roas p{color:#dbe8fb;font-size:15px}
+.roas .big{font-family:var(--f-mono);font-size:14px;background:rgba(255,255,255,.12);border-radius:10px;padding:10px 14px;white-space:nowrap}
+.process{margin-top:56px}
+.process h3{font-size:20px;margin-bottom:18px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.step{padding:22px;border-right:1px solid var(--line);position:relative}
+.step:last-child{border-right:0}
+.step::before{counter-increment:s;content:"Tahap " counter(s);font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+.step h4{font-size:16px;margin:6px 0 6px}
+.step p{font-size:14px;color:var(--ink-2)}
+.addon{margin-top:20px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:18px 22px;border:1px dashed var(--accent);border-radius:var(--r);color:var(--ink-2);font-size:15px}
+.addon b{color:var(--ink)}
+@media (max-width:900px){.pillars{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.step:nth-child(2){border-right:0}.step:nth-child(-n+2){border-bottom:1px solid var(--line)}.roas{grid-template-columns:1fr}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}.step{border-right:0;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}}
+
+/* pricing */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:18px;position:relative;box-shadow:var(--shadow)}
+.plan .pname{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.plan .pname h3{font-size:20px}
+.plan .pname .ic{color:var(--accent)}
+.plan .fit{font-size:14px;color:var(--muted);margin-top:-8px}
+.price{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,3.2vw,38px);letter-spacing:-.02em}
+.price small{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:15px}
+.plan li{display:grid;grid-template-columns:20px 1fr;gap:10px;color:var(--ink-2)}
+.plan li svg{color:var(--accent);margin-top:3px}
+.plan li.inc{font-weight:600;color:var(--ink)}
+.plan .btn{justify-content:center;margin-top:auto}
+.plan.pop{background:linear-gradient(160deg,var(--blue-1),var(--blue-3));color:#fff;border-color:transparent;transform:translateY(-12px)}
+.plan.pop .fit,.plan.pop .price small{color:#c9dbf5}
+.plan.pop li{color:#dbe8fb}
+.plan.pop li.inc{color:#fff}
+.plan.pop li svg,.plan.pop .pname .ic{color:var(--gold)}
+.badge{position:absolute;top:-13px;left:28px;background:var(--red);color:#fff;font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.06em;padding:5px 12px;border-radius:999px}
+.trial{margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:22px 26px}
+.trial h3{font-size:20px}
+.trial p{color:var(--ink-2);font-size:15px}
+.compare{margin-top:48px}
+.compare h3{font-size:20px;margin-bottom:6px}
+.compare > p{color:var(--ink-2);font-size:15px;margin-bottom:16px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:620px;font-size:15px}
+th,td{padding:14px 16px;text-align:center;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-family:var(--f-display);font-size:14px;background:var(--surface-2)}
+thead th.us{background:var(--accent);color:var(--accent-ink)}
+tbody tr:last-child td{border-bottom:0}
+td.us{background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
+.yes{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+@media (max-width:960px){.plans{grid-template-columns:1fr}.plan.pop{transform:none}}
+
+/* portfolio */
+.note{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.kpi b{display:block;font-family:var(--f-display);font-size:30px;font-weight:800;color:var(--accent)}
+.kpi span{font-size:14px;color:var(--ink-2)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.tab{font-family:var(--f-display);font-weight:600;font-size:14px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.case{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:var(--shadow)}
+.case > *{min-width:0}
+.case .meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--accent)}
+.chip.red{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
+.case h3{font-size:24px;margin-bottom:10px}
+.case p{color:var(--ink-2);font-size:15px}
+.case dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0}
+.case dl div{border-top:2px solid var(--line);padding-top:10px}
+.case dt{font-size:13px;color:var(--muted)}
+.case dd{margin:0;font-family:var(--f-display);font-weight:700;font-size:20px}
+.case dd .up{color:var(--good);font-size:14px;margin-left:6px}
+.case dd .down{color:var(--good);font-size:14px;margin-left:6px}
+.chartbox{position:relative;height:320px}
+.chartcap{font-size:13px;color:var(--muted);margin-top:8px}
+.lab{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.lab > *{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.panel h3{font-size:19px;margin-bottom:6px}
+.panel > p{font-size:14px;color:var(--ink-2);margin-bottom:16px}
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ab fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:0;display:grid;gap:8px}
+.ab legend{font-family:var(--f-display);font-weight:600;font-size:14px;padding:0 6px}
+.ab label{font-size:13px;color:var(--muted);display:grid;gap:4px}
+.ab input,.calc input{font:inherit;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.verdict{margin-top:14px;padding:14px;border-radius:12px;background:var(--surface-2);font-size:14px;color:var(--ink-2)}
+.verdict b{font-family:var(--f-display);color:var(--ink);font-size:16px;display:block;margin-bottom:4px}
+.verdict.win b{color:var(--good)}
+.mono{font-family:var(--f-mono);font-size:13px}
+.calc{display:grid;gap:12px}
+.calc label{font-size:13px;color:var(--muted);display:grid;gap:4px}
+.calc .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc output{display:block}
+.proj{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.proj div{background:var(--surface-2);border-radius:10px;padding:10px;text-align:center}
+.proj span{font-size:12px;color:var(--muted);display:block}
+.proj b{font-family:var(--f-display);font-size:17px}
+@media (max-width:900px){.kpis{grid-template-columns:1fr 1fr}.case,.lab{grid-template-columns:1fr}}
+@media (max-width:460px){.ab,.calc .row{grid-template-columns:1fr}.proj{grid-template-columns:1fr}}
+
+
+/* detail + form + more */
+.more{margin-top:auto;align-self:flex-start;color:var(--accent);font-family:var(--f-display);font-weight:600;font-size:15px;text-decoration:none}
+.more:hover{text-decoration:underline}
+.dblock{scroll-margin-top:90px;display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px;box-shadow:var(--shadow);margin-bottom:24px}
+.dblock h3{font-size:28px;font-weight:800;margin-top:6px}
+.dblock .lead{color:var(--ink-2);max-width:70ch}
+.dsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.dstep{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--bg)}
+.dstep .k{font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+.dstep h4{font-size:17px;margin:4px 0 10px}
+.dstep ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:14px;display:grid;gap:6px}
+.viz{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.viz figure{margin:0;border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--bg);min-width:0}
+.viz svg{width:100%;height:auto;display:block}
+.viz figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+.viz figcaption.top{margin:0 0 8px;font-family:var(--f-display);font-weight:600;color:var(--ink)}
+svg .t{fill:var(--ink-2);font-size:12px;font-family:var(--f-body)}
+svg .b{font-weight:700;fill:var(--ink)}
+svg .n{fill:#fff;font-size:11px;font-weight:700;font-family:var(--f-display)}
+.f-a{fill:var(--accent)}.f-s{fill:var(--surface)}.f-r{fill:var(--red)}.f-m{fill:var(--muted)}.f-g{fill:var(--gold)}
+.s-a{stroke:var(--accent)}.s-l{stroke:var(--line)}.s-i{stroke:var(--ink)}
+.f-s.s-l{stroke-width:1.5}
+.ft{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;align-items:start}
+.ftform{display:grid;grid-template-columns:1fr 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow)}
+.ftform label{font-size:14px;font-weight:500;color:var(--ink-2);display:grid;gap:6px}
+.ftform .full{grid-column:1/-1}
+.ftform input,.ftform textarea{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical}
+.ftform .btn{justify-content:center}
+@media (max-width:900px){.dsteps,.viz,.ft{grid-template-columns:1fr}.ftform{grid-template-columns:1fr}}
+
+/* terms */
+.terms{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;align-items:start}
+.terms aside{position:sticky;top:100px;display:grid;gap:14px}
+.terms aside p{color:var(--ink-2)}
+.terms aside .pill{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;color:var(--ink-2)}
+.terms aside .pill svg{color:var(--accent);flex:none;margin-top:2px}
+.acc{display:grid;gap:12px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 20px;font-family:var(--f-display);font-weight:700;font-size:18px}
+summary::-webkit-details-marker{display:none}
+summary .n{font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--accent);background:var(--surface-2);border-radius:6px;padding:3px 7px}
+summary .chev{margin-left:auto;transition:transform .2s;color:var(--muted)}
+details[open] summary .chev{transform:rotate(180deg)}
+details[open] summary{color:var(--accent)}
+details ol{margin:0;padding:0 22px 20px 58px;display:grid;gap:10px;color:var(--ink-2)}
+details ol li::marker{font-family:var(--f-mono);font-size:13px;color:var(--accent)}
+@media (max-width:900px){.terms{grid-template-columns:1fr}.terms aside{position:static}}
+
+/* footer */
+footer{background:var(--blue-3);color:#c9dbf5;position:relative}
+footer::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--red) 0 12%,var(--blue-1) 12% 100%)}
+footer .wrap{padding-block:56px 28px}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:32px}
+.fgrid > *{min-width:0}
+footer .logo{font-size:40px}
+footer .tagline{font-family:var(--f-display);color:#fff;margin-top:8px;font-weight:500}
+footer h4{color:#fff;font-size:15px;margin-bottom:14px;letter-spacing:.04em}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:15px}
+footer li{display:flex;gap:10px;align-items:flex-start}
+footer li svg{flex:none;margin-top:3px;color:#7fb4ec}
+footer a{text-decoration:none}
+footer a:hover{color:#fff;text-decoration:underline}
+.copy{background:none;border:1px solid rgba(255,255,255,.25);color:#c9dbf5;border-radius:6px;font-size:11px;padding:1px 7px;cursor:pointer;margin-left:6px}
+.social{display:flex;gap:10px;margin-top:4px}
+.social a{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#fff}
+.social a:hover{background:var(--red)}
+.fbottom{margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:13px;color:#9fbbe4}
+@media (max-width:900px){.fgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.fgrid{grid-template-columns:1fr}}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="chk" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 10.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="vmark" viewBox="0 0 80 100"><path d="M2 38h17l15 34 26-58-11 1 22-15 3 26-6-8-34 74z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a href="#home" class="logo" aria-label="AdVibs beranda">Ad<svg aria-hidden="true"><use href="#vmark"/></svg><span class="i">ı</span>bs</a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navlist" aria-label="Buka menu">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <ul id="navlist">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#layanan">Layanan Kami</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#terms">Terms &amp; Conditions</a></li>
+    </ul>
+    <a href="#free-trial" class="btn btn-red cta-top">Free Trial 7 Hari</a>
+  </div>
+</header>
+
+<main>
+<!-- ================= HOME ================= -->
+<section class="hero" id="home">
+  <div class="wrap">
+    <div>
+      <h1 class="logo" aria-label="AdVibs">Ad<svg aria-hidden="true"><use href="#vmark"/></svg><span class="i">ı</span>bs</h1>
+      <div class="motto"><span class="spark">✦</span> Good Vibes, Great Stats. <span class="spark">✦</span></div>
+      <p class="lead"><b>AdVibs adalah agensi periklanan berbasis data</b> yang menggabungkan kreativitas, strategi, dan analisis statistik untuk menghasilkan kampanye iklan yang lebih efektif dan terukur. Kami membantu UMKM, brand D2C, dan toko online berhenti menebak, lalu mulai beriklan dengan angka yang bisa dipertanggungjawabkan.</p>
+      <div class="actions">
+        <a href="https://wa.me/6285333915930?text=Halo%20AdVibs%2C%20saya%20ingin%20konsultasi%20gratis." target="_blank" rel="noopener" class="btn btn-red">Mulai Konsultasi Gratis</a>
+        <a href="#layanan" class="btn btn-ghost">Lihat Layanan Kami</a>
+      </div>
+    </div>
+    <div class="flow" aria-label="Alur kerja AdVibs">
+      <h3>From Data to Better Ads</h3>
+      <ol>
+        <li><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><div><b>Data</b><span>Kumpulan data &amp; insight historis klien</span></div></li>
+        <li><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/></svg></div><div><b>Insight</b><span>Temuan strategis yang relevan</span></div></li>
+        <li><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div><b>Action</b><span>Eksekusi kampanye yang tepat sasaran</span></div></li>
+        <li><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 16v-4M11 16V9M16 16v-6M4 9l6-5 4 3 6-5"/></svg></div><div><b>Better Ads</b><span>Hasil lebih optimal, ROAS meningkat</span></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LAYANAN ================= -->
+<section class="block" id="layanan">
+  <div class="wrap">
+    <div class="head">
+      <div><div class="eyebrow">Layanan Kami</div><h2>Tiga pilar untuk iklan yang tidak boncos</h2></div>
+      <p>Setiap layanan menjawab tantangan yang paling sering dikeluhkan pengiklan: anggaran terbuang tanpa hasil terukur, iklan salah sasaran, materi kreatif yang dipilih berdasarkan selera, dan ROAS yang tidak bisa diproyeksikan.</p>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar">
+        <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></div>
+        <h3>CHECK THE STATS</h3><div class="tag">Data &amp; Efficiency</div>
+        <p>Setiap kampanye diawali audit data historis untuk menemukan pos anggaran yang bocor. Keputusan diambil dari metrik seperti CPA, CTR, dan ROAS, bukan intuisi.</p>
+        <ul><li>Audit akun iklan &amp; data penjualan historis</li><li>Identifikasi audiens yang tidak produktif</li><li>Rekomendasi efisiensi anggaran periklanan</li></ul>
+        <a class="more" href="#detail-check">Lihat Selengkapnya..</a>
+      </article>
+      <article class="pillar">
+        <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div>
+        <h3>HIT THE TARGET</h3><div class="tag">Precision Targeting</div>
+        <p>Pemodelan data prediktif memetakan audiens yang paling berpotensi membeli. Iklan hanya tampil ke segmen yang tepat sehingga biaya per akuisisi turun dan lonjakan biaya promosi dapat dicegah.</p>
+        <ul><li>Segmentasi audiens berbasis data</li><li>Media planning &amp; strategi bidding</li><li>Alokasi anggaran per platform yang hemat</li></ul>
+        <a class="more" href="#detail-target">Lihat Selengkapnya..</a>
+      </article>
+      <article class="pillar">
+        <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M6 17v-5M11 17V8M16 17v-7M4 9l5-5 4 3 7-5"/></svg></div>
+        <h3>PROVE THE VIBE</h3><div class="tag">Validated Creatives</div>
+        <p>Materi kreatif tidak dipilih hanya karena terlihat menarik, tetapi diuji lewat A/B testing mingguan. Hanya visual yang terbukti meningkatkan konversi yang diperbesar anggarannya.</p>
+        <ul><li>Produksi visual statis, video UGC, dan copywriting</li><li>A/B testing materi kreatif mingguan</li><li>Mengatasi creative fatigue secara terukur</li></ul>
+        <a class="more" href="#detail-prove">Lihat Selengkapnya..</a>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<section class="block alt" id="layanan-detail">
+  <div class="wrap">
+    <div class="head"><div><div class="eyebrow">Cara Kami Mengerjakan</div><h2>Dari data mentah sampai keputusan</h2></div><p>Setiap layanan punya tiga tahap utama: pengumpulan data, metode analisis, dan output yang Anda terima.</p></div>
+    <article class="dblock" id="detail-check"><div class="eyebrow">Layanan 1 · Data &amp; Efficiency</div><h3>CHECK THE STATS</h3><p class="lead">Fondasi setiap kampanye: membedah data historis agar tidak ada anggaran yang bocor sebelum iklan tayang.</p>
+      <div class="dsteps"><div class="dstep"><span class="k">TAHAP 1</span><h4>Pengumpulan Data</h4><ul><li>Akses read-only akun Meta, TikTok, dan Google Ads</li><li>Data penjualan, order, dan margin 3–6 bulan terakhir</li><li>Data pixel/event: klik, add-to-cart, dan checkout</li></ul></div><div class="dstep"><span class="k">TAHAP 2</span><h4>Metode Analisis</h4><ul><li>Statistik deskriptif: CPA, CTR, CVR, dan ROAS per audiens</li><li>Analisis Pareto untuk menemukan audiens penyerap anggaran terbesar</li><li>Deteksi outlier dan tren untuk menandai pos yang bocor</li></ul></div><div class="dstep"><span class="k">TAHAP 3</span><h4>Output &amp; Pembahasan</h4><ul><li>Laporan audit: peta kebocoran anggaran per kampanye</li><li>Rekomendasi pemangkasan dan realokasi anggaran</li><li>Baseline metrik sebagai pembanding hasil optimasi</li></ul></div></div>
+      <div class="viz"><figure class="wide"><figcaption class="top">Alur pengerjaan</figcaption><svg viewBox="0 0 480 110" role="img" aria-label="Alur pengerjaan"><rect x="6" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="57" cy="26" r="11" class="f-a"/><text x="57" y="30" class="n" text-anchor="middle">1</text><text x="57" y="55" class="t b" text-anchor="middle">Data historis</text><text x="57" y="73" class="t" text-anchor="middle">akun & penjualan</text><path d="M110 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="124" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="175" cy="26" r="11" class="f-a"/><text x="175" y="30" class="n" text-anchor="middle">2</text><text x="175" y="55" class="t b" text-anchor="middle">Audit metrik</text><text x="175" y="73" class="t" text-anchor="middle">CPA · CTR · ROAS</text><path d="M228 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="242" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="293" cy="26" r="11" class="f-a"/><text x="293" y="30" class="n" text-anchor="middle">3</text><text x="293" y="55" class="t b" text-anchor="middle">Temukan</text><text x="293" y="73" class="t" text-anchor="middle">kebocoran</text><path d="M346 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="360" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="411" cy="26" r="11" class="f-a"/><text x="411" y="30" class="n" text-anchor="middle">4</text><text x="411" y="55" class="t b" text-anchor="middle">Rekomendasi</text><text x="411" y="73" class="t" text-anchor="middle">efisiensi anggaran</text></svg></figure><figure class="wide"><figcaption class="top">Ilustrasi hasil</figcaption><div class="cw"><svg viewBox="0 0 480 200" role="img" aria-label="Porsi anggaran dan ROAS per audiens"><text x="0" y="16" class="t b">Porsi anggaran dan ROAS per audiens (ilustrasi)</text><text x="0" y="55" class="t">Lookalike jenuh</text><rect x="120" y="36" width="238" height="28" rx="6" class="f-r"/><text x="364" y="55" class="t b">34% · ROAS 0,9×</text><text x="0" y="95" class="t">Minat spesifik</text><rect x="120" y="76" width="182" height="28" rx="6" class="f-a"/><text x="308" y="95" class="t b">26% · ROAS 3,1×</text><text x="0" y="135" class="t">Retargeting</text><rect x="120" y="116" width="154" height="28" rx="6" class="f-a"/><text x="280" y="135" class="t b">22% · ROAS 4,2×</text><text x="0" y="175" class="t">Broad</text><rect x="120" y="156" width="126" height="28" rx="6" class="f-m"/><text x="252" y="175" class="t b">18% · ROAS 2,4×</text></svg></div><figcaption>Contoh temuan audit: audiens jenuh menyerap anggaran terbesar dengan ROAS terendah.</figcaption></figure></div>
+      <a class="more" href="#layanan">← Kembali ke Layanan Kami</a></article>
+    <article class="dblock" id="detail-target"><div class="eyebrow">Layanan 2 · Precision Targeting</div><h3>HIT THE TARGET</h3><p class="lead">Memetakan siapa yang paling berpotensi membeli, lalu mengarahkan iklan dan anggaran hanya ke segmen tersebut.</p>
+      <div class="dsteps"><div class="dstep"><span class="k">TAHAP 1</span><h4>Pengumpulan Data</h4><ul><li>Riwayat transaksi pelanggan (tanggal, frekuensi, nilai)</li><li>Data demografi dan minat audiens dari platform</li><li>Data perilaku: kunjungan situs dan produk dilihat</li></ul></div><div class="dstep"><span class="k">TAHAP 2</span><h4>Metode Analisis</h4><ul><li>Analisis RFM (recency, frequency, monetary)</li><li>Clustering k-means, divalidasi dengan silhouette score</li><li>Propensity model untuk skor peluang membeli</li></ul></div><div class="dstep"><span class="k">TAHAP 3</span><h4>Output &amp; Pembahasan</h4><ul><li>Profil tiap segmen dan segmen prioritas</li><li>Media plan: platform, strategi bidding, jadwal tayang</li><li>Alokasi anggaran per platform dan per segmen</li></ul></div></div>
+      <div class="viz"><figure class="wide"><figcaption class="top">Alur pengerjaan</figcaption><svg viewBox="0 0 480 110" role="img" aria-label="Alur pengerjaan"><rect x="6" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="57" cy="26" r="11" class="f-a"/><text x="57" y="30" class="n" text-anchor="middle">1</text><text x="57" y="55" class="t b" text-anchor="middle">Data transaksi</text><text x="57" y="73" class="t" text-anchor="middle">& perilaku</text><path d="M110 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="124" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="175" cy="26" r="11" class="f-a"/><text x="175" y="30" class="n" text-anchor="middle">2</text><text x="175" y="55" class="t b" text-anchor="middle">Segmentasi</text><text x="175" y="73" class="t" text-anchor="middle">RFM · k-means</text><path d="M228 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="242" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="293" cy="26" r="11" class="f-a"/><text x="293" y="30" class="n" text-anchor="middle">3</text><text x="293" y="55" class="t b" text-anchor="middle">Skor potensi</text><text x="293" y="73" class="t" text-anchor="middle">propensity model</text><path d="M346 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="360" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="411" cy="26" r="11" class="f-a"/><text x="411" y="30" class="n" text-anchor="middle">4</text><text x="411" y="55" class="t b" text-anchor="middle">Media plan</text><text x="411" y="73" class="t" text-anchor="middle">& bidding</text></svg></figure><figure class="wide"><figcaption class="top">Ilustrasi hasil</figcaption><div class="cw"><svg viewBox="0 0 480 220" role="img" aria-label="Peta segmen pelanggan"><path d="M40 20V190H470" class="s-l" fill="none" stroke-width="2"/><text x="46" y="14" class="t">Nilai belanja ↑</text><text x="470" y="210" class="t" text-anchor="end">Frekuensi belanja →</text><ellipse cx="400" cy="60" rx="42" ry="28" class="f-a" opacity=".18"/><circle cx="386" cy="52" r="4.5" class="f-a"/><circle cx="410" cy="48" r="4.5" class="f-a"/><circle cx="400" cy="66" r="4.5" class="f-a"/><circle cx="392" cy="74" r="4.5" class="f-a"/><circle cx="416" cy="68" r="4.5" class="f-a"/><circle cx="382" cy="70" r="4.5" class="f-a"/><text x="400" y="26" class="t b" text-anchor="middle">Loyal bernilai tinggi</text><ellipse cx="290" cy="105" rx="42" ry="28" class="f-g" opacity=".18"/><circle cx="276" cy="97" r="4.5" class="f-g"/><circle cx="300" cy="93" r="4.5" class="f-g"/><circle cx="290" cy="111" r="4.5" class="f-g"/><circle cx="282" cy="119" r="4.5" class="f-g"/><circle cx="306" cy="113" r="4.5" class="f-g"/><circle cx="272" cy="115" r="4.5" class="f-g"/><text x="290" y="71" class="t b" text-anchor="middle">Potensial</text><ellipse cx="170" cy="145" rx="42" ry="28" class="f-m" opacity=".18"/><circle cx="156" cy="137" r="4.5" class="f-m"/><circle cx="180" cy="133" r="4.5" class="f-m"/><circle cx="170" cy="151" r="4.5" class="f-m"/><circle cx="162" cy="159" r="4.5" class="f-m"/><circle cx="186" cy="153" r="4.5" class="f-m"/><circle cx="152" cy="155" r="4.5" class="f-m"/><text x="170" y="111" class="t b" text-anchor="middle">Pemburu promo</text><ellipse cx="90" cy="168" rx="42" ry="28" class="f-r" opacity=".18"/><circle cx="76" cy="160" r="4.5" class="f-r"/><circle cx="100" cy="156" r="4.5" class="f-r"/><circle cx="90" cy="174" r="4.5" class="f-r"/><circle cx="82" cy="182" r="4.5" class="f-r"/><circle cx="106" cy="176" r="4.5" class="f-r"/><circle cx="72" cy="178" r="4.5" class="f-r"/><text x="90" y="134" class="t b" text-anchor="middle">Tidak aktif</text></svg></div><figcaption>Contoh hasil clustering: empat segmen pembeli berdasarkan frekuensi dan nilai belanja.</figcaption></figure></div>
+      <a class="more" href="#layanan">← Kembali ke Layanan Kami</a></article>
+    <article class="dblock" id="detail-prove"><div class="eyebrow">Layanan 3 · Validated Creatives</div><h3>PROVE THE VIBE</h3><p class="lead">Setiap materi kreatif diuji secara statistik. Hanya yang terbukti meningkatkan konversi yang diperbesar anggarannya.</p>
+      <div class="dsteps"><div class="dstep"><span class="k">TAHAP 1</span><h4>Pengumpulan Data</h4><ul><li>Aset kreatif lama beserta performa historisnya</li><li>Hipotesis visual, hook, dan copy yang akan diuji</li><li>Data klik dan konversi per varian setiap minggu</li></ul></div><div class="dstep"><span class="k">TAHAP 2</span><h4>Metode Analisis</h4><ul><li>A/B testing mingguan dengan satu variabel per uji</li><li>Uji z dua proporsi, α = 0,05</li><li>Pemantauan frekuensi dan CTR untuk mendeteksi creative fatigue</li></ul></div><div class="dstep"><span class="k">TAHAP 3</span><h4>Output &amp; Pembahasan</h4><ul><li>Laporan pemenang: lift konversi, p-value, dan keputusan</li><li>Anggaran diperbesar hanya untuk kreatif yang terbukti menang</li><li>Rencana rotasi dan brief kreatif berikutnya</li></ul></div></div>
+      <div class="viz"><figure class="wide"><figcaption class="top">Alur pengerjaan</figcaption><svg viewBox="0 0 480 110" role="img" aria-label="Alur pengerjaan"><rect x="6" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="57" cy="26" r="11" class="f-a"/><text x="57" y="30" class="n" text-anchor="middle">1</text><text x="57" y="55" class="t b" text-anchor="middle">Hipotesis</text><text x="57" y="73" class="t" text-anchor="middle">kreatif</text><path d="M110 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="124" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="175" cy="26" r="11" class="f-a"/><text x="175" y="30" class="n" text-anchor="middle">2</text><text x="175" y="55" class="t b" text-anchor="middle">A/B test</text><text x="175" y="73" class="t" text-anchor="middle">mingguan</text><path d="M228 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="242" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="293" cy="26" r="11" class="f-a"/><text x="293" y="30" class="n" text-anchor="middle">3</text><text x="293" y="55" class="t b" text-anchor="middle">Uji signifikansi</text><text x="293" y="73" class="t" text-anchor="middle">z-test α 0,05</text><path d="M346 58h10m-4-4l4 4-4 4" class="s-a" fill="none" stroke-width="2"/><rect x="360" y="26" width="102" height="64" rx="12" class="f-s s-l"/><circle cx="411" cy="26" r="11" class="f-a"/><text x="411" y="30" class="n" text-anchor="middle">4</text><text x="411" y="55" class="t b" text-anchor="middle">Scale-up</text><text x="411" y="73" class="t" text-anchor="middle">versi pemenang</text></svg></figure><figure class="wide"><figcaption class="top">Ilustrasi hasil</figcaption><div class="cw"><svg viewBox="0 0 480 220" role="img" aria-label="Perbandingan konversi kreatif A dan B"><text x="240" y="12" class="t b" text-anchor="middle">Lift +37% · z = 2,76 · p ≈ 0,006 (signifikan)</text><path d="M60 180H440" class="s-l" stroke-width="2"/><rect x="110" y="90.0" width="90" height="90.0" rx="6" class="f-m"/><path d="M155 75 v30 m-8 0h16 m-16 30h16" class="s-i" fill="none" stroke-width="2"/><text x="155" y="67" class="t b" text-anchor="middle">3,00%</text><text x="155" y="200" class="t" text-anchor="middle">Kreatif A</text><rect x="270" y="56.4" width="90" height="123.6" rx="6" class="f-a"/><path d="M315 39 v33 m-8 0h16 m-16 33h16" class="s-i" fill="none" stroke-width="2"/><text x="315" y="31" class="t b" text-anchor="middle">4,12%</text><text x="315" y="200" class="t" text-anchor="middle">Kreatif B</text><text x="240" y="216" class="t" text-anchor="middle">Tingkat konversi dengan rentang kepercayaan 95%</text></svg></div><figcaption>Contoh hasil uji: Kreatif B unggul signifikan, sama dengan contoh di A/B Test Checker pada bagian Portfolio.</figcaption></figure></div>
+      <a class="more" href="#layanan">← Kembali ke Layanan Kami</a></article>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="head">
+      <div><div class="eyebrow">Pricing</div><h2>Paket fleksibel, anggaran transparan</h2></div>
+      <p>75% responden survei kami memilih sistem paket fleksibel. Biaya layanan dibayar di awal periode, sedangkan anggaran iklan dibayar langsung oleh klien ke platform, jadi tidak ada biaya tersembunyi.</p>
+    </div>
+
+    <div class="plans">
+      <article class="plan">
+        <div class="pname"><h3>Paket Starter</h3><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 15c-1.5 1.3-2 4-2 6 2 0 4.7-.5 6-2M9 15l-3-3c1-4 5-9 15-9 0 10-5 14-9 15zM15 9h.01"/></svg></div>
+        <div class="fit">Untuk UMKM scale-up dengan anggaran iklan Rp1–5 juta</div>
+        <div class="price num">Rp1.490.000 <small>/ bulan</small></div>
+        <ul>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Optimasi 1 akun iklan (Meta Ads atau TikTok Ads)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Batas kelola anggaran iklan s.d. Rp5.000.000 / bulan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>4 materi visual statis tervalidasi per bulan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Audit metrik dasar sebelum kampanye berjalan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Pengaturan penargetan audiens berbasis data awal</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Laporan performa &amp; evaluasi ROAS bulanan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Dukungan konsultasi via chat pada jam kerja</li>
+        </ul>
+        <a href="#footer" class="btn btn-solid">Pilih Starter</a>
+      </article>
+
+      <article class="plan pop">
+        <span class="badge">PALING DIMINATI</span>
+        <div class="pname"><h3>Paket Growth</h3><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>
+        <div class="fit">Untuk brand D2C yang akuisisinya bergantung pada iklan digital</div>
+        <div class="price num">Rp2.990.000 <small>/ bulan</small></div>
+        <ul>
+          <li class="inc"><svg width="18" height="18"><use href="#chk"/></svg>Semua fitur Paket Starter</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Pengelolaan 2 akun iklan (Meta Ads &amp; TikTok Ads)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Batas kelola anggaran iklan Rp5.000.000 – Rp20.000.000 / bulan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>8 materi kreatif per bulan (Video UGC &amp; Visual Statis)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>A/B testing materi kreatif mingguan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Audit data historis mendalam (cegah inefisiensi anggaran)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Akses dasbor analitik performa real-time</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Sesi evaluasi strategi &amp; peninjauan bulanan terjadwal</li>
+        </ul>
+        <a href="#footer" class="btn btn-red">Pilih Growth</a>
+      </article>
+
+      <article class="plan">
+        <div class="pname"><h3>Paket Scale-Up</h3><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg></div>
+        <div class="fit">Untuk e-commerce dengan anggaran iklan di atas Rp20 juta</div>
+        <div class="price num">Rp4.990.000 <small>/ bulan</small></div>
+        <ul>
+          <li class="inc"><svg width="18" height="18"><use href="#chk"/></svg>Semua fitur Paket Starter &amp; Growth</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Optimasi multi-channel (Meta, TikTok, &amp; Google Ads)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Pengelolaan anggaran iklan &gt; Rp20.000.000 / bulan</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>16 materi kreatif per bulan (Video Interaktif, UGC, &amp; Copywriting)</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Pemodelan data prediktif &amp; precision targeting</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Dedicated Data Lead khusus pendamping bisnis</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Dasbor analitik terpusat dengan pembaruan harian</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Skema performance-based fee berbasis peningkatan laba</li>
+          <li><svg width="18" height="18"><use href="#chk"/></svg>Dukungan prioritas 24/7 &amp; rapat strategi mingguan</li>
+        </ul>
+        <a href="#footer" class="btn btn-solid">Pilih Scale-Up</a>
+      </article>
+    </div>
+
+    <div class="trial">
+      <div><h3>Free Trial: Free Consultation 7 Days</h3><p>Rasakan cara kerja AdVibs tanpa risiko sebelum berlangganan paket berbayar.</p></div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><span class="price num" style="font-size:30px">Rp0 <small>/ 7 hari</small></span><a href="#free-trial" class="btn btn-red">Ambil Free Trial</a></div>
+    </div>
+
+    <div class="addon">
+      <div><b>Layanan satu kali (One-Time Project Fee).</b> Audit diagnostik akun iklan atau produksi materi kreatif tambahan di luar paket langganan.</div>
+      <div><b class="num">Audit Rp990.000</b>, dikembalikan sebagai cashback jika upgrade paket dalam 14 hari.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FREE TRIAL ================= -->
+<section class="block alt" id="free-trial">
+  <div class="wrap ft">
+    <div><div class="eyebrow">Free Trial</div><h2 style="font-size:clamp(28px,3.6vw,40px);font-weight:800;margin:10px 0 14px">Ambil Free Trial 7 Hari</h2><p style="color:var(--ink-2)">Isi data berikut dan tim AdVibs akan menghubungi Anda melalui WhatsApp untuk menjadwalkan sesi Free Consultation. Biaya Rp0 dan tidak mengikat.</p></div>
+    <form class="ftform" id="trialForm">
+      <label>Nama<input name="nama" type="text" autocomplete="name" required></label>
+      <label>Nomor WA<input name="wa" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+      <label>Nama Perusahaan<input name="perusahaan" type="text" autocomplete="organization" required></label>
+      <label class="full">Alamat<textarea name="alamat" rows="2" autocomplete="street-address" required></textarea></label>
+      <label class="full">Kebutuhan<textarea name="kebutuhan" rows="3" placeholder="Contoh: ingin menurunkan CPA iklan Meta Ads" required></textarea></label>
+      <button class="btn btn-red full" type="submit">Kirim Permintaan Free Trial</button>
+      <p class="full" id="ftMsg" role="status" style="font-size:14px;color:var(--good)"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= PORTFOLIO ================= -->
+<section class="block" id="portfolio">
+  <div class="wrap">
+    <div class="head">
+      <div><div class="eyebrow">Studi Kasus &amp; Analisis Kampanye</div><h2>Our Portfolio</h2></div>
+      <div style="display:grid;gap:10px;justify-items:start"><p>Our Portfolio adalah riset pribadi tim AdVibs terhadap perusahaan-perusahaan yang kami pilih sendiri. Kami membaca data, menguji hipotesis, dan mengubah temuan menjadi rekomendasi keputusan anggaran.</p><span class="note">ⓘ Riset pribadi AdVibs, bukan hasil kerja sama dengan perusahaan terkait. Angka bersifat ilustratif.</span></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><b class="num">2,3×</b><span>Rata-rata kenaikan ROAS pada riset kami</span></div>
+      <div class="kpi"><b class="num">−38%</b><span>Rata-rata penurunan CPA pada simulasi audit</span></div>
+      <div class="kpi"><b class="num">146</b><span>Varian kreatif diuji lewat A/B testing</span></div>
+      <div class="kpi"><b class="num">12</b><span>Perusahaan dipilih untuk riset</span></div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Studi kasus">
+      <button class="tab" role="tab" id="t0" aria-selected="true" data-i="0">Skincare D2C</button>
+      <button class="tab" role="tab" id="t1" aria-selected="false" data-i="1">Kedai Kopi UMKM</button>
+      <button class="tab" role="tab" id="t2" aria-selected="false" data-i="2">E-commerce Fashion</button>
+      <button class="tab" role="tab" id="t3" aria-selected="false" data-i="3">Segmentasi Audiens</button>
+    </div>
+
+    <article class="case" role="tabpanel" id="casePanel" aria-live="polite">
+      <div>
+        <div class="meta" id="cMeta"></div>
+        <h3 id="cTitle"></h3>
+        <p id="cDesc"></p>
+        <dl id="cKpi"></dl>
+      </div>
+      <div>
+        <div class="chartbox"><canvas id="caseChart" aria-label="Grafik studi kasus" role="img"></canvas></div>
+        <div class="chartcap" id="cCap"></div>
+      </div>
+    </article>
+
+    <div class="lab">
+      <div class="panel">
+        <h3>A/B Test Checker</h3>
+        <p>Alat yang kami pakai di pilar PROVE THE VIBE. Masukkan hasil dua materi iklan untuk melihat apakah selisih konversinya signifikan (uji z dua proporsi, α = 0,05).</p>
+        <form class="ab" id="abForm" novalidate>
+          <fieldset><legend>Kreatif A</legend>
+            <label for="aN">Klik<input id="aN" type="number" min="1" value="4200"></label>
+            <label for="aC">Konversi<input id="aC" type="number" min="0" value="126"></label>
+          </fieldset>
+          <fieldset><legend>Kreatif B</legend>
+            <label for="bN">Klik<input id="bN" type="number" min="1" value="4150"></label>
+            <label for="bC">Konversi<input id="bC" type="number" min="0" value="171"></label>
+          </fieldset>
+        </form>
+        <div class="verdict" id="abOut"></div>
+      </div>
+      <div class="panel">
+        <h3>Proyeksi ROAS Sederhana</h3>
+        <p>Perkiraan cepat omzet dari anggaran iklan bulanan, berdasarkan CPA dan nilai order rata-rata. Angka ini titik awal diskusi, bukan janji hasil.</p>
+        <form class="calc" id="calcForm" novalidate>
+          <label for="budget">Anggaran iklan per bulan (Rp)<input id="budget" type="number" min="0" step="100000" value="10000000"></label>
+          <div class="row">
+            <label for="cpa">CPA saat ini (Rp)<input id="cpa" type="number" min="1" step="1000" value="45000"></label>
+            <label for="aov">Nilai order rata-rata (Rp)<input id="aov" type="number" min="0" step="1000" value="150000"></label>
+          </div>
+          <label for="eff">Target efisiensi CPA setelah optimasi: <output id="effOut" class="mono">25%</output><input id="eff" type="range" min="0" max="50" value="25" style="padding:0;border:0;background:none"></label>
+        </form>
+        <div class="proj">
+          <div><span>Order / bulan</span><b class="num" id="pOrd">-</b></div>
+          <div><span>Estimasi omzet</span><b class="num" id="pRev">-</b></div>
+          <div><span>ROAS</span><b class="num" id="pRoas">-</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TERMS ================= -->
+<section class="block alt" id="terms">
+  <div class="wrap terms">
+    <aside>
+      <div class="eyebrow">Terms &amp; Conditions</div>
+      <h2 style="font-size:clamp(28px,3.6vw,40px);font-weight:800">Syarat dan ketentuan layanan</h2>
+      <p>Ketentuan berikut berlaku untuk seluruh paket langganan AdVibs. Kami menuliskannya dengan jelas karena transparansi anggaran adalah hal yang paling dituntut pasar.</p>
+      <div class="pill"><svg width="18" height="18"><use href="#chk"/></svg><span>Akun iklan, data, dan aset tetap sepenuhnya milik Anda.</span></div>
+      <div class="pill"><svg width="18" height="18"><use href="#chk"/></svg><span>Anggaran iklan dibayar langsung ke platform, bukan lewat AdVibs.</span></div>
+    </aside>
+    <div class="acc">
+      <details open>
+        <summary><span class="n">01</span>Anggaran Iklan<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Anggaran iklan dibayar langsung oleh Klien ke platform (Meta, TikTok, Google).</li>
+          <li>Batas kelola anggaran iklan menyesuaikan ketentuan paket yang dipilih: Starter s.d. Rp5.000.000, Growth Rp5.000.000 – Rp20.000.000, dan Scale-Up di atas Rp20.000.000 per bulan.</li>
+        </ol>
+      </details>
+      <details>
+        <summary><span class="n">02</span>Pembayaran &amp; Pembatalan<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Biaya layanan dibayar di awal periode (prepaid) dan tidak dapat dikembalikan (non-refundable).</li>
+          <li>Pembatalan paket wajib diinformasikan minimal 7 hari sebelum periode baru dimulai.</li>
+        </ol>
+      </details>
+      <details>
+        <summary><span class="n">03</span>Materi Kreatif<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Kuota kreatif berlaku bulanan (4, 8, atau 16 materi sesuai paket) dan tidak dapat diakumulasi ke bulan berikutnya.</li>
+          <li>Setiap materi kreatif mendapatkan maksimal 2 kali revisi minor.</li>
+        </ol>
+      </details>
+      <details>
+        <summary><span class="n">04</span>Bonus &amp; Cashback<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Bonus ROAS 3% (khusus Paket Scale-Up) dihitung dari kenaikan penjualan bersih Klien.</li>
+          <li>Cashback audit Rp990.000 berlaku jika Klien melakukan upgrade paket dalam 14 hari.</li>
+        </ol>
+      </details>
+      <details>
+        <summary><span class="n">05</span>Hak &amp; Tanggung Jawab<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Akun iklan, data, dan aset sepenuhnya milik Klien.</li>
+          <li>AdVibs berfokus pada optimasi data. Kebijakan akun (persetujuan iklan, pembatasan, atau penangguhan) tergantung pada platform masing-masing.</li>
+        </ol>
+      </details>
+      <details>
+        <summary><span class="n">06</span>Free Trial<svg class="chev" width="18" height="18" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></summary>
+        <ol>
+          <li>Free Consultation berlaku 7 hari dengan biaya Rp0 dan tidak mengikat.</li>
+          <li>Setelah masa trial, Klien bebas memilih paket Starter, Growth, atau Scale-Up.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a href="#home" class="logo" aria-label="AdVibs">Ad<svg aria-hidden="true"><use href="#vmark"/></svg><span class="i">ı</span>bs</a>
+        <div class="tagline">Good Vibes, Great Stats.</div>
+        <p style="margin-top:12px;font-size:14px;max-width:34ch">Agensi periklanan berbasis data untuk UMKM, brand D2C, dan e-commerce Indonesia.</p>
+      </div>
+      <div>
+        <h4>Alamat</h4>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Kampus ITS Sukolilo, Keputih, Kec. Sukolilo, Surabaya, Jawa Timur 60111</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Senin – Jumat, 09.00 – 17.00 WIB</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontak</h4>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span><span class="sel">hello@advibs.id</span><button class="copy" data-copy="hello@advibs.id">Salin</button></span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/></svg><span><a class="sel num" href="https://wa.me/6285333915930" target="_blank" rel="noopener">0853-3391-5930</a><button class="copy" data-copy="085333915930">Salin</button><br><small>WhatsApp Business</small></span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20"/></svg><span>www.advibs.id</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Media Sosial</h4>
+        <ul style="margin-bottom:14px">
+          <li>Instagram · @advibs.id</li>
+          <li>TikTok · @advibs.id</li>
+          <li>LinkedIn · AdVibs Indonesia</li>
+        </ul>
+        <div class="social">
+          <a href="#footer" aria-label="Instagram AdVibs"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="#footer" aria-label="TikTok AdVibs"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.4 2.3 1.9 3.8 4 4v3.2c-1.5 0-2.9-.4-4-1.1v6.4A5.5 5.5 0 1 1 10.5 10v3.3a2.3 2.3 0 1 0 2.2 2.2V3z"/></svg></a>
+          <a href="#footer" aria-label="LinkedIn AdVibs"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h3.5v11H4zM5.8 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 9h3.3v1.6c.5-.9 1.7-1.9 3.5-1.9 3.7 0 4.2 2.4 4.2 5.5V20h-3.5v-5c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V20H10z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© 2026 AdVibs. Seluruh hak cipta dilindungi.</span>
+      <span>Kewirausahaan Berbasis Teknologi · Kelompok 4 · Statistika Bisnis ITS</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+  // nav
+  const btn=document.getElementById('menuBtn'), list=document.getElementById('navlist');
+  btn.addEventListener('click',()=>{const o=list.classList.toggle('open');btn.setAttribute('aria-expanded',o)});
+  list.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{list.classList.remove('open');btn.setAttribute('aria-expanded',false)}));
+  const links=[...list.querySelectorAll('a')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  function spy(){let cur=0;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<120)cur=i});links.forEach((a,i)=>a.classList.toggle('on',i===cur))}
+  addEventListener('scroll',spy,{passive:true});spy();
+
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.dataset.copy;
+    const done=()=>{b.textContent='Tersalin';setTimeout(()=>b.textContent='Salin',1500)};
+    const fallback=()=>{const r=document.createRange();r.selectNodeContents(b.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Tekan Ctrl+C'};
+    try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
+  }));
+
+  // helpers
+  const rp=n=>'Rp'+Math.round(n).toLocaleString('id-ID');
+  const rpShort=n=>n>=1e9?'Rp'+(n/1e9).toLocaleString('id-ID',{maximumFractionDigits:1})+' M':n>=1e6?'Rp'+(n/1e6).toLocaleString('id-ID',{maximumFractionDigits:1})+' jt':rp(n);
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // portfolio data (dummy)
+  const W=['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'];
+  const cases=[
+    {chips:['Paket Growth','D2C','Meta & TikTok'],title:'Lumera Skin: proyeksi ROAS naik dari 1,6× ke 3,9× dalam 12 minggu',
+     desc:'Riset kami pada brand skincare lokal pilihan (anggaran sekitar Rp15 juta/bulan) menemukan indikasi creative fatigue. Audit historis menemukan 34% anggaran habis di audiens lookalike yang sudah jenuh. Rekomendasi kami: memindahkan anggaran ke tiga segmen baru dan merotasi 8 kreatif per bulan berdasarkan hasil A/B test mingguan.',
+     kpi:[['ROAS akhir','3,9×','+144%'],['CPA','Rp41.200','−46%'],['CTR','2,8%','+1,1 pp'],['Kreatif diuji','24 varian','']],
+     cap:'ROAS mingguan aktual vs garis target, minggu 1–12.',
+     chart:c=>({type:'line',data:{labels:W,datasets:[
+       {label:'ROAS aktual',data:[1.6,1.7,1.9,2.2,2.4,2.5,2.9,3.1,3.3,3.5,3.7,3.9],borderColor:c.accent,backgroundColor:c.fill,fill:true,tension:.35,pointRadius:3},
+       {label:'Target ROAS',data:Array(12).fill(3),borderColor:c.red,borderDash:[6,5],pointRadius:0,fill:false}]},
+       options:{scales:{y:{min:0,ticks:{callback:v=>v+'×'}}}}})},
+    {chips:['Paket Starter','UMKM','Meta Ads'],title:'Kopi Tepi: proyeksi CPA turun 41% tanpa menambah anggaran',
+     desc:'Dalam riset kami, kedai kopi susu dengan 3 cabang di Surabaya beriklan Rp3 juta/bulan dengan target lokasi terlalu luas. Kami merekomendasikan radius 5 km dari cabang, jam tayang mengikuti data transaksi, dan validasi 4 visual statis per bulan.',
+     kpi:[['CPA','Rp18.900','−41%'],['Order via iklan','+68%',''],['Jangkauan relevan','71%','+29 pp'],['Anggaran','Tetap Rp3 jt','']],
+     cap:'CPA bulanan sebelum dan sesudah pendampingan AdVibs (Rp).',
+     chart:c=>({type:'bar',data:{labels:['Jan','Feb','Mar','Apr','Mei','Jun'],datasets:[
+       {label:'CPA (Rp)',data:[32000,31500,27400,23100,20400,18900],backgroundColor:[c.muted,c.muted,c.accent,c.accent,c.accent,c.accent],borderRadius:6}]},
+       options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'Rp'+(v/1000)+'rb'}}}}})},
+    {chips:['Paket Scale-Up','E-commerce','Multi-channel'],title:'Rupa Store: realokasi anggaran Rp60 juta antar kanal',
+     desc:'Pada riset kami, toko fashion online membagi anggaran rata ke tiga platform. Model atribusi kami menunjukkan Google Shopping menghasilkan ROAS tertinggi pada pembeli berulang, sementara TikTok unggul di akuisisi baru. Kami merekomendasikan alokasi ulang anggaran mengikuti peran tiap kanal.',
+     kpi:[['ROAS gabungan','4,6×','+1,4×'],['Kenaikan penjualan bersih','Rp118 jt',''],['Bonus kinerja 3%','Rp3,5 jt',''],['Kanal dikelola','3','']],
+     cap:'ROAS per kanal sebelum dan sesudah realokasi anggaran.',
+     chart:c=>({type:'bar',data:{labels:['Meta Ads','TikTok Ads','Google Ads'],datasets:[
+       {label:'Sebelum',data:[2.9,3.1,3.6],backgroundColor:c.muted,borderRadius:6},
+       {label:'Sesudah',data:[3.8,4.4,5.7],backgroundColor:c.accent,borderRadius:6}]},
+       options:{scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'×'}}}}})},
+    {chips:['Analisis','Clustering','Precision Targeting'],title:'Pemetaan 4 segmen pembeli dari 18.400 transaksi',
+     desc:'Analisis k-means pada data RFM (recency, frequency, monetary) klien D2C menghasilkan empat segmen. Segmen "Loyal Bernilai Tinggi" hanya 14% pelanggan tetapi menyumbang 47% omzet, sehingga menjadi prioritas kampanye retensi dan basis audiens lookalike.',
+     kpi:[['Transaksi dianalisis','18.400',''],['Segmen terbentuk','4',''],['Kontribusi segmen teratas','47% omzet',''],['Silhouette score','0,61','']],
+     cap:'Rata-rata frekuensi belanja vs nilai belanja per segmen (ukuran titik = jumlah pelanggan).',
+     chart:c=>({type:'bubble',data:{datasets:[
+       {label:'Loyal Bernilai Tinggi',data:[{x:7.8,y:640,r:12}],backgroundColor:c.accent},
+       {label:'Potensial',data:[{x:4.1,y:390,r:18}],backgroundColor:c.gold},
+       {label:'Pemburu Promo',data:[{x:3.2,y:150,r:26}],backgroundColor:c.muted},
+       {label:'Tidak Aktif',data:[{x:1.2,y:120,r:20}],backgroundColor:c.red}]},
+       options:{scales:{x:{min:0,max:10,title:{display:true,text:'Frekuensi belanja / tahun'}},y:{min:0,max:800,title:{display:true,text:'Nilai belanja rata-rata (ribu Rp)'}}}}})}
+  ];
+
+  let chart=null, active=0;
+  function colors(){
+    const accent=css('--accent');
+    return {accent,red:css('--red'),gold:css('--gold'),muted:css('--muted'),ink:css('--ink-2'),line:css('--line'),
+      fill:accent.startsWith('#')?accent+'26':'rgba(10,98,173,.15)'};
+  }
+  function render(i){
+    active=i;const d=cases[i];
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.i==i));
+    document.getElementById('casePanel').setAttribute('aria-labelledby','t'+i);
+    document.getElementById('cMeta').innerHTML=d.chips.map((c,j)=>`<span class="chip${j===0?' red':''}">${c}</span>`).join('');
+    document.getElementById('cTitle').textContent=d.title;
+    document.getElementById('cDesc').textContent=d.desc;
+    document.getElementById('cKpi').innerHTML=d.kpi.map(k=>`<div><dt>${k[0]}</dt><dd class="num">${k[1]}${k[2]?`<span class="up">${k[2]}</span>`:''}</dd></div>`).join('');
+    document.getElementById('cCap').textContent=d.cap;
+    if(!window.Chart)return;
+    const c=colors();
+    Chart.defaults.font.family='"DM Sans",system-ui,sans-serif';
+    Chart.defaults.color=c.ink;Chart.defaults.borderColor=c.line;
+    const cfg=d.chart(c);
+    cfg.options=Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}}}},cfg.options);
+    if(cfg.options.plugins&&cfg.options.plugins.legend&&cfg.options.plugins.legend.display===false){}
+    if(chart)chart.destroy();
+    chart=new Chart(document.getElementById('caseChart'),cfg);
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>render(+t.dataset.i)));
+  render(0);
+  const mq=matchMedia('(prefers-color-scheme: dark)');
+  (mq.addEventListener?mq.addEventListener('change',()=>render(active)):mq.addListener(()=>render(active)));
+  new MutationObserver(()=>render(active)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+  // free trial form -> WhatsApp
+  const tf=document.getElementById('trialForm');
+  tf.addEventListener('submit',e=>{e.preventDefault();
+    const v=n=>tf.elements[n].value.trim();
+    const t=['*Permintaan Free Trial 7 Hari AdVibs*','','Nama: '+v('nama'),'Nomor WA: '+v('wa'),'Email: '+v('email'),'Perusahaan: '+v('perusahaan'),'Alamat: '+v('alamat'),'Kebutuhan: '+v('kebutuhan')].join('\n');
+    window.open('https://wa.me/6285333915930?text='+encodeURIComponent(t),'_blank','noopener');
+    document.getElementById('ftMsg').textContent='Terima kasih! WhatsApp akan terbuka berisi data Anda. Tekan kirim untuk menyelesaikan pendaftaran.';
+    tf.reset();
+  });
+
+  // A/B test (two-proportion z-test)
+  function normCdf(z){const t=1/(1+.2316419*Math.abs(z));const d=.3989423*Math.exp(-z*z/2);const p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+  function ab(){
+    const g=id=>parseFloat(document.getElementById(id).value);
+    const aN=g('aN'),aC=g('aC'),bN=g('bN'),bC=g('bC'),out=document.getElementById('abOut');
+    if(!(aN>0&&bN>0&&aC>=0&&bC>=0&&aC<=aN&&bC<=bN)){out.className='verdict';out.innerHTML='<b>Periksa input</b>Jumlah konversi harus antara 0 dan jumlah klik.';return}
+    const pa=aC/aN,pb=bC/bN,p=(aC+bC)/(aN+bN),se=Math.sqrt(p*(1-p)*(1/aN+1/bN));
+    const z=se?(pb-pa)/se:0,pv=2*(1-normCdf(Math.abs(z))),lift=pa?(pb-pa)/pa*100:0,sig=pv<.05;
+    const win=pb>pa?'B':'A';
+    out.className='verdict'+(sig?' win':'');
+    out.innerHTML=`<b>${sig?`Kreatif ${win} unggul secara signifikan`:'Belum ada pemenang yang signifikan'}</b>
+      CR A <span class="mono">${(pa*100).toFixed(2)}%</span> · CR B <span class="mono">${(pb*100).toFixed(2)}%</span> · lift <span class="mono">${lift>=0?'+':''}${lift.toFixed(1)}%</span><br>
+      z = <span class="mono">${z.toFixed(2)}</span>, p-value = <span class="mono">${pv<.0001?'< 0,0001':pv.toFixed(4)}</span>. ${sig?`Anggaran dapat dialihkan ke kreatif ${win}.`:'Lanjutkan pengujian sampai data cukup.'}`;
+  }
+  document.getElementById('abForm').addEventListener('input',ab);
+  document.getElementById('abForm').addEventListener('submit',e=>e.preventDefault());
+  ab();
+
+  // ROAS projection
+  function calc(){
+    const b=+document.getElementById('budget').value||0,cpa=+document.getElementById('cpa').value||0,aov=+document.getElementById('aov').value||0,eff=+document.getElementById('eff').value;
+    document.getElementById('effOut').textContent=eff+'%';
+    const ncpa=cpa*(1-eff/100);
+    if(ncpa<=0){['pOrd','pRev','pRoas'].forEach(id=>document.getElementById(id).textContent='-');return}
+    const ord=b/ncpa,rev=ord*aov;
+    document.getElementById('pOrd').textContent=Math.round(ord).toLocaleString('id-ID');
+    document.getElementById('pRev').textContent=rpShort(rev);
+    document.getElementById('pRoas').textContent=(b?rev/b:0).toLocaleString('id-ID',{maximumFractionDigits:1})+'×';
+  }
+  document.getElementById('calcForm').addEventListener('input',calc);
+  document.getElementById('calcForm').addEventListener('submit',e=>e.preventDefault());
+  calc();
+})();
+</script>
